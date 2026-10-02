@@ -38,3 +38,8 @@ env-port-forward:
 	
 env-port-close:
 	@docker compose down port-forwarder 
+todoapp-run:
+	@export LOGGER_FOLDER=${PROJECT_ROOT}/out/logs && \
+	export POSTGRES_HOST=localhost && \
+	go mod tidy && \
+	go run cmd/todoapp/main.go	
