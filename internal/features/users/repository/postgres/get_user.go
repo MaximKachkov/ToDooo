@@ -7,7 +7,7 @@ import (
 
 	"github.com/MaximKachkov/ToDooo/internal/core/domain"
 	core_errors "github.com/MaximKachkov/ToDooo/internal/core/errors"
-	"github.com/jackc/pgx/v5"
+	core_postgres_pool "github.com/MaximKachkov/ToDooo/internal/core/repository/postgres/pool"
 )
 
 func (s *UsersRepository) GetUser(ctx context.Context, id int) (domain.User, error) {
@@ -29,7 +29,7 @@ func (s *UsersRepository) GetUser(ctx context.Context, id int) (domain.User, err
 		&userModel.PhoneNumber,
 	)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
+		if errors.Is(err, core_postgres_pool.ErrNoRows) {
 			return domain.User{}, fmt.Errorf("problem scanning the user %d for db:%w", id, core_errors.ErrNotFound)
 		}
 		return domain.User{}, fmt.Errorf("problem scanning :%w", err)

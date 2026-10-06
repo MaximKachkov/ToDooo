@@ -55,6 +55,15 @@ type UserPatch struct {
 	PhoneNumber Nullable[string]
 }
 
+func NewUserPatch(fullName Nullable[string], phoneNumber Nullable[string]) UserPatch {
+	var domainPatch UserPatch
+
+	domainPatch.FullName = fullName
+	domainPatch.PhoneNumber = phoneNumber
+
+	return domainPatch
+}
+
 func (u *UserPatch) Validate() error {
 	if u.FullName.Set && u.FullName.Value == nil {
 		return fmt.Errorf("full name cannot be nil:%w", core_errors.ErrInvalidArgument)

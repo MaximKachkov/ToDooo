@@ -10,7 +10,6 @@ import (
 	core_http_request "github.com/MaximKachkov/ToDooo/internal/core/transport/http/request"
 	core_http_response "github.com/MaximKachkov/ToDooo/internal/core/transport/http/response"
 	core_http_types "github.com/MaximKachkov/ToDooo/internal/core/transport/http/types"
-	core_http_utils "github.com/MaximKachkov/ToDooo/internal/core/transport/http/utils"
 )
 
 type PatchUserRequest struct {
@@ -49,7 +48,7 @@ func (s *UsersHTTPHandler) PatchUser(rw http.ResponseWriter, r *http.Request) {
 	logger := core_logger.FromContext(ctx)
 	responseHandler := core_http_response.NewHTTPResponseHandler(logger, rw)
 
-	userId, err := core_http_utils.GetInPathValue(r, "id")
+	userId, err := core_http_request.GetInPathValue(r, "id")
 	if err != nil {
 		responseHandler.ErrorResponse(err, "error getinpathvalue patchuser")
 		return
@@ -76,10 +75,6 @@ func (s *UsersHTTPHandler) PatchUser(rw http.ResponseWriter, r *http.Request) {
 }
 
 func UserPatchFromRequest(request PatchUserRequest) domain.UserPatch {
-	var domainPatch domain.UserPatch
 
-	domainPatch.FullName = request.FullName.ToDomainNullable()
-	domainPatch.PhoneNumber = request.PhoneNumber.ToDomainNullable()
-
-	return domainPatch
+	return domain.NewUserPatch(request.FullName.ToDomainNullable(), request.PhoneNumber.ToDomainNullable())
 }

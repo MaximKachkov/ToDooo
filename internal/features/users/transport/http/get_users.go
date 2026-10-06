@@ -6,8 +6,8 @@ import (
 
 	"github.com/MaximKachkov/ToDooo/internal/core/domain"
 	core_logger "github.com/MaximKachkov/ToDooo/internal/core/logger"
+	core_http_request "github.com/MaximKachkov/ToDooo/internal/core/transport/http/request"
 	core_http_response "github.com/MaximKachkov/ToDooo/internal/core/transport/http/response"
-	core_http_utils "github.com/MaximKachkov/ToDooo/internal/core/transport/http/utils"
 	"go.uber.org/zap"
 )
 
@@ -34,11 +34,15 @@ func (h *UsersHTTPHandler) GetUsers(rw http.ResponseWriter, r *http.Request) {
 }
 
 func GetLimitOffsetQueryParams(r *http.Request) (*int, *int, error) {
-	offset, err := core_http_utils.GetIntQueryParam(r, "offset")
+	const (
+		limitConst  string = "limit"
+		offsetConst string = "offset"
+	)
+	offset, err := core_http_request.GetIntQueryParam(r, offsetConst)
 	if err != nil {
 		return nil, nil, fmt.Errorf("get offset params:%w", err)
 	}
-	limit, err := core_http_utils.GetIntQueryParam(r, "limit")
+	limit, err := core_http_request.GetIntQueryParam(r, limitConst)
 	if err != nil {
 		return nil, nil, fmt.Errorf("get limit params:%w", err)
 	}

@@ -1,8 +1,10 @@
 {
     "gopls": {
-        "completeUnimported": true
+        "completeUnimported": true,
+        "hoverKind": "FullDocumentation"
     },
     "[go]": {
+        "editor.hover.enabled": "on",
         "editor.quickSuggestions": {
             "other": "on",
             "comments": "off",

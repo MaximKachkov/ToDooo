@@ -44,6 +44,9 @@ func (u *UsersHTTPHandler) Routes() []core_http_server.Route {
 			Method:  http.MethodGet,
 			Path:    "/users",
 			Handler: u.GetUsers,
+			//Middleware: []core_http_middleware.Middleware{
+			//	core_http_middleware.Dummy("xui"),
+			//},
 		},
 		{
 			Method:  http.MethodGet,
