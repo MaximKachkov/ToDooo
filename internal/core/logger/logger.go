@@ -17,6 +17,12 @@ type Logger struct {
 	file *os.File
 }
 
+type loggerContextKey struct{}
+
+var (
+	LoggerContextKey = loggerContextKey{}
+)
+
 func NewLogger(config Config) (*Logger, error) {
 	zapLvl := zap.NewAtomicLevel()
 	if err := zapLvl.UnmarshalText([]byte(config.Level)); err != nil {
@@ -67,7 +73,7 @@ func (l *Logger) With(field ...zap.Field) *Logger {
 }
 
 func FromContext(ctx context.Context) *Logger {
-	log, ok := ctx.Value("log").(*Logger)
+	log, ok := ctx.Value(LoggerContextKey).(*Logger)
 	if !ok {
 		panic("no logger in ctx")
 	}

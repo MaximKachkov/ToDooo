@@ -35,7 +35,7 @@ func Logger(log *core_logger.Logger) Middleware {
 				zap.String("url", r.URL.String()),
 			)
 
-			ctx := context.WithValue(r.Context(), "log", l)
+			ctx := context.WithValue(r.Context(), core_logger.LoggerContextKey, l)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
@@ -74,7 +74,7 @@ func Trace() Middleware {
 			next.ServeHTTP(rw, r)
 
 			log.Debug("<<<handler over",
-				zap.Int("status_code", rw.GetStatusCodeOrPanic()),
+				zap.Int("status_code", rw.GetStatusCode()),
 				zap.Duration("latency", time.Since(before)),
 			)
 

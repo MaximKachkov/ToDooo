@@ -8,7 +8,7 @@ import (
 	"syscall"
 
 	core_logger "github.com/MaximKachkov/ToDooo/internal/core/logger"
-	core_postgres_pool "github.com/MaximKachkov/ToDooo/internal/core/repository/postgres/pool"
+	core_pgx_pool "github.com/MaximKachkov/ToDooo/internal/core/repository/postgres/pool/pgx"
 	core_http_middleware "github.com/MaximKachkov/ToDooo/internal/core/transport/http/middleware"
 	core_http_server "github.com/MaximKachkov/ToDooo/internal/core/transport/http/server"
 	user_postgres_repository "github.com/MaximKachkov/ToDooo/internal/features/users/repository/postgres"
@@ -28,7 +28,7 @@ func main() {
 	defer logger.Close()
 
 	logger.Debug("initializing connection pool")
-	pool, err := core_postgres_pool.NewConnectionPool(ctx, *core_postgres_pool.ConfigMust())
+	pool, err := core_pgx_pool.NewPool(ctx, *core_pgx_pool.ConfigMust())
 	if err != nil {
 		logger.Fatal("error creating a pool", zap.Error(err))
 	}
@@ -45,13 +45,16 @@ func main() {
 	httpServer := core_http_server.NewHTTPServer(*core_http_server.ConfigMust(), logger,
 		core_http_middleware.RequestId(),
 		core_http_middleware.Logger(logger),
-		core_http_middleware.Panic(),
-		core_http_middleware.Trace())
+		core_http_middleware.Trace(),
+		core_http_middleware.Panic())
 
-	apiVersionRouter := core_http_server.NewAPIVersionRouter(core_http_server.APIVersion1)
-	apiVersionRouter.RegisterRoutes(usersTranposrtHTTP.Routes()...)
-
-	httpServer.RegisterAPIRouters(apiVersionRouter)
+	apiVersionRouterV1 := core_http_server.NewAPIVersionRouter(core_http_server.APIVersion1)
+	apiVersionRouterV1.RegisterRoutes(usersTranposrtHTTP.Routes()...)
+	/*
+	   //	apiVersionRouterV2 := core_http_server.NewAPIVersionRouter(core_http_server.APIVersion2, core_http_middleware.Dummy("api v2 middleware"))
+	   //	apiVersionRouterV2.RegisterRoutes(usersTranposrtHTTP.Routes()...)
+	*/
+	httpServer.RegisterAPIRouters(apiVersionRouterV1) //apiVersionRouterV2,
 
 	if err := httpServer.Run(ctx); err != nil {
 		logger.Error("HTTP server run error ", zap.Error(err))

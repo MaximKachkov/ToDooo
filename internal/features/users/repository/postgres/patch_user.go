@@ -7,7 +7,7 @@ import (
 
 	"github.com/MaximKachkov/ToDooo/internal/core/domain"
 	core_errors "github.com/MaximKachkov/ToDooo/internal/core/errors"
-	"github.com/jackc/pgx/v5"
+	core_postgres_pool "github.com/MaximKachkov/ToDooo/internal/core/repository/postgres/pool"
 )
 
 func (r *UsersRepository) PatchUser(ctx context.Context, id int, patch domain.User) (domain.User, error) {
@@ -33,7 +33,7 @@ func (r *UsersRepository) PatchUser(ctx context.Context, id int, patch domain.Us
 		&userModel.PhoneNumber,
 	)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
+		if errors.Is(err, core_postgres_pool.ErrNoRows) {
 			return domain.User{}, fmt.Errorf("no rows found :%v , %w", err, core_errors.ErrNotFound)
 		}
 		return domain.User{}, fmt.Errorf("error scan:%w ", err)
