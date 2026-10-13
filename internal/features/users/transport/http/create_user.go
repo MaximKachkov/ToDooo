@@ -21,7 +21,7 @@ func (h *UsersHTTPHandler) CreateUser(rw http.ResponseWriter, r *http.Request) {
 	logger := core_logger.FromContext(ctx)
 	responseHandler := core_http_response.NewHTTPResponseHandler(logger, rw)
 
-	logger.Debug("invoce create user handler")
+	logger.Debug("invoke create user handler")
 
 	var request CreateUserRequest
 

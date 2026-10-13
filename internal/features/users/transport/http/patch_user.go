@@ -38,6 +38,7 @@ func (r *PatchUserRequest) Validate() error {
 			}
 		}
 	}
+
 	return nil
 }
 
