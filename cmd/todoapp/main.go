@@ -6,18 +6,27 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	core_logger "github.com/MaximKachkov/ToDooo/internal/core/logger"
 	core_pgx_pool "github.com/MaximKachkov/ToDooo/internal/core/repository/postgres/pool/pgx"
 	core_http_middleware "github.com/MaximKachkov/ToDooo/internal/core/transport/http/middleware"
 	core_http_server "github.com/MaximKachkov/ToDooo/internal/core/transport/http/server"
+	tasks_postgres_repository "github.com/MaximKachkov/ToDooo/internal/features/tasks/repository/postgres"
+	tasks_service "github.com/MaximKachkov/ToDooo/internal/features/tasks/service"
+	tasks_transport_http "github.com/MaximKachkov/ToDooo/internal/features/tasks/transport/http"
 	user_postgres_repository "github.com/MaximKachkov/ToDooo/internal/features/users/repository/postgres"
 	users_service "github.com/MaximKachkov/ToDooo/internal/features/users/service"
 	users_transport_http "github.com/MaximKachkov/ToDooo/internal/features/users/transport/http"
 	"go.uber.org/zap"
 )
 
+var (
+	timeZone = time.UTC
+)
+
 func main() {
+	time.Local = timeZone
 	ctx, _ := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 
 	logger, err := core_logger.NewLogger(*core_logger.NewConfigMust())
@@ -40,6 +49,10 @@ func main() {
 	usersService := users_service.NewUsersService(usersRepository)
 	usersTranposrtHTTP := users_transport_http.NewUsersHTTPHandler(usersService)
 
+	tasksRepository := tasks_postgres_repository.NewTasksRepository(pool)
+	tasksService := tasks_service.NewTasksService(tasksRepository)
+	tasksTransportHTTP := tasks_transport_http.NewTasksHTTPHandler(tasksService)
+
 	logger.Debug("initializing HTTP server")
 
 	httpServer := core_http_server.NewHTTPServer(*core_http_server.ConfigMust(), logger,
@@ -50,6 +63,7 @@ func main() {
 
 	apiVersionRouterV1 := core_http_server.NewAPIVersionRouter(core_http_server.APIVersion1)
 	apiVersionRouterV1.RegisterRoutes(usersTranposrtHTTP.Routes()...)
+	apiVersionRouterV1.RegisterRoutes(tasksTransportHTTP.Routes()...)
 	/*
 	   //	apiVersionRouterV2 := core_http_server.NewAPIVersionRouter(core_http_server.APIVersion2, core_http_middleware.Dummy("api v2 middleware"))
 	   //	apiVersionRouterV2.RegisterRoutes(usersTranposrtHTTP.Routes()...)
