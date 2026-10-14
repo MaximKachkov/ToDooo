@@ -7,6 +7,7 @@ RUN CGO_ENABLED=0 go build -o /app/cmd/todoapp/exe /app/cmd/todoapp
 
 FROM alpine:3.23
 WORKDIR /app
+RUN mkdir -p /app/out/logs
 COPY --from=builder /app/cmd/todoapp/exe /app
 CMD ["/app/exe"]
 
