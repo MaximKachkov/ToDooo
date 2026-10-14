@@ -1,4 +1,4 @@
-FROM  golang:1.26-bookworm AS builder
+FROM golang:1.26-bookworm AS builder
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
@@ -8,6 +8,8 @@ RUN CGO_ENABLED=0 go build -o /app/cmd/todoapp/exe /app/cmd/todoapp
 FROM alpine:3.23
 WORKDIR /app
 RUN mkdir -p /app/out/logs
+ENV LOGGER_FOLDER=/app/out/logs
+ENV LOGGER_LEVEL=DEBUG
 COPY --from=builder /app/cmd/todoapp/exe /app
 CMD ["/app/exe"]
 
