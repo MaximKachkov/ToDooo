@@ -12,6 +12,9 @@ import (
 	core_pgx_pool "github.com/MaximKachkov/ToDooo/internal/core/repository/postgres/pool/pgx"
 	core_http_middleware "github.com/MaximKachkov/ToDooo/internal/core/transport/http/middleware"
 	core_http_server "github.com/MaximKachkov/ToDooo/internal/core/transport/http/server"
+	statistics_repository_postgres "github.com/MaximKachkov/ToDooo/internal/features/statistics/repository/postgres"
+	statistics_service "github.com/MaximKachkov/ToDooo/internal/features/statistics/service"
+	statistics_transport_http "github.com/MaximKachkov/ToDooo/internal/features/statistics/transport/http"
 	tasks_postgres_repository "github.com/MaximKachkov/ToDooo/internal/features/tasks/repository/postgres"
 	tasks_service "github.com/MaximKachkov/ToDooo/internal/features/tasks/service"
 	tasks_transport_http "github.com/MaximKachkov/ToDooo/internal/features/tasks/transport/http"
@@ -53,6 +56,10 @@ func main() {
 	tasksService := tasks_service.NewTasksService(tasksRepository)
 	tasksTransportHTTP := tasks_transport_http.NewTasksHTTPHandler(tasksService)
 
+	statisticsRepository := statistics_repository_postgres.NewTasksRepository(pool)
+	statisticsService := statistics_service.NewStatisticsService(statisticsRepository)
+	statisticsTransportHTTP := statistics_transport_http.NewStatisticsHTTPHandler(statisticsService)
+
 	logger.Debug("initializing HTTP server")
 
 	httpServer := core_http_server.NewHTTPServer(*core_http_server.ConfigMust(), logger,
@@ -64,6 +71,7 @@ func main() {
 	apiVersionRouterV1 := core_http_server.NewAPIVersionRouter(core_http_server.APIVersion1)
 	apiVersionRouterV1.RegisterRoutes(usersTranposrtHTTP.Routes()...)
 	apiVersionRouterV1.RegisterRoutes(tasksTransportHTTP.Routes()...)
+	apiVersionRouterV1.RegisterRoutes(statisticsTransportHTTP.Routes()...)
 	/*
 	   //	apiVersionRouterV2 := core_http_server.NewAPIVersionRouter(core_http_server.APIVersion2, core_http_middleware.Dummy("api v2 middleware"))
 	   //	apiVersionRouterV2.RegisterRoutes(usersTranposrtHTTP.Routes()...)
