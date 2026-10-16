@@ -1,0 +1,268 @@
+basePath: /api/v1
+definitions:
+  github_com_MaximKachkov_ToDooo_internal_core_transport_http_response.ErrorResponse:
+    properties:
+      error:
+        example: short human-readable message
+        type: string
+      message:
+        example: hello
+        type: string
+    type: object
+  internal_features_users_transport_http.CreateUserRequest:
+    properties:
+      full_name:
+        example: Иван Иванов
+        maxLength: 100
+        minLength: 3
+        type: string
+      phone_number:
+        example: "+77081540727"
+        maxLength: 15
+        minLength: 10
+        type: string
+    required:
+    - full_name
+    type: object
+  internal_features_users_transport_http.CreateUserResponse:
+    properties:
+      full_name:
+        example: Максим Скачков
+        type: string
+      id:
+        example: 10
+        type: integer
+      phone_number:
+        example: "+72281540727"
+        type: string
+      version:
+        example: 3
+        type: integer
+    type: object
+  internal_features_users_transport_http.GetUserResponse:
+    properties:
+      full_name:
+        example: Максим Скачков
+        type: string
+      id:
+        example: 10
+        type: integer
+      phone_number:
+        example: "+72281540727"
+        type: string
+      version:
+        example: 3
+        type: integer
+    type: object
+  internal_features_users_transport_http.PatchUserRequest:
+    properties:
+      full_name:
+        example: Maxat Maxatovich
+        type: string
+      phone_number:
+        example: "+77081540727"
+        type: string
+    type: object
+  internal_features_users_transport_http.PatchUserResponse:
+    properties:
+      full_name:
+        example: Максим Скачков
+        type: string
+      id:
+        example: 10
+        type: integer
+      phone_number:
+        example: "+72281540727"
+        type: string
+      version:
+        example: 3
+        type: integer
+    type: object
+  internal_features_users_transport_http.UserDTOResponse:
+    properties:
+      full_name:
+        example: Максим Скачков
+        type: string
+      id:
+        example: 10
+        type: integer
+      phone_number:
+        example: "+72281540727"
+        type: string
+      version:
+        example: 3
+        type: integer
+    type: object
+host: 127.0.0.1:5050
+info:
+  contact: {}
+  description: ToDo app REST-API scheme
+  title: Golang ToDo API
+  version: "1.0"
+paths:
+  /users:
+    get:
+      description: Получить пользователей с лимит и оффсет
+      parameters:
+      - description: size of the page with users
+        in: query
+        name: limit
+        type: integer
+      - description: size of the page with users
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of users
+          schema:
+            items:
+              $ref: '#/definitions/internal_features_users_transport_http.UserDTOResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_MaximKachkov_ToDooo_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_MaximKachkov_ToDooo_internal_core_transport_http_response.ErrorResponse'
+      summary: Получить пользователей
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      description: Создать нового пользователя в системе
+      parameters:
+      - description: CreateUser тело запроса
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_features_users_transport_http.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Успешно созданный пользователь
+          schema:
+            $ref: '#/definitions/internal_features_users_transport_http.CreateUserResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_MaximKachkov_ToDooo_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_MaximKachkov_ToDooo_internal_core_transport_http_response.ErrorResponse'
+      summary: Создать пользователя
+      tags:
+      - users
+  /users/{id}:
+    delete:
+      description: Удалить пользователя из системы по ID
+      parameters:
+      - description: ID удаляемого пользователя
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: Успешное удаление пользователя
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_MaximKachkov_ToDooo_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/github_com_MaximKachkov_ToDooo_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_MaximKachkov_ToDooo_internal_core_transport_http_response.ErrorResponse'
+      summary: Удалить пользлвателя
+      tags:
+      - users
+    get:
+      description: Получить нового пользователя по id
+      parameters:
+      - description: ID получаемого пользователя
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешно созданный пользователь
+          schema:
+            $ref: '#/definitions/internal_features_users_transport_http.GetUserResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_MaximKachkov_ToDooo_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: not found
+          schema:
+            $ref: '#/definitions/github_com_MaximKachkov_ToDooo_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_MaximKachkov_ToDooo_internal_core_transport_http_response.ErrorResponse'
+      summary: Получить пользователя
+      tags:
+      - users
+    patch:
+      consumes:
+      - application/json
+      description: "Patch and existing user by id\n### Логика обновления полей (Three-state
+        logic):\n1. ***Поле не передано***: `phone_number` игнорируется , значение
+        в БД не меняется\n2. ***Явно передано значение***: `\"phone_number\":\"+77081540727\"`
+        - устанавливает новый номер в бд\n3. **Передан null**: `\"phone_number\":
+        null`\t null - очищает значение в дб\n4. Ограничения: `full_name` не может
+        быть выставлен как null"
+      parameters:
+      - description: id of user
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: request body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_features_users_transport_http.PatchUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Patched user
+          schema:
+            $ref: '#/definitions/internal_features_users_transport_http.PatchUserResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_MaximKachkov_ToDooo_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_MaximKachkov_ToDooo_internal_core_transport_http_response.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/github_com_MaximKachkov_ToDooo_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_MaximKachkov_ToDooo_internal_core_transport_http_response.ErrorResponse'
+      summary: Patch  user
+      tags:
+      - users
+swagger: "2.0"

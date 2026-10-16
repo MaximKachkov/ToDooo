@@ -71,11 +71,11 @@ func (h *HTTPResponseHandler) PanicResponse(p any, msg string) {
 }
 
 func (h *HTTPResponseHandler) errorResponse(statuscode int, err error, msg string) {
-
-	response := map[string]string{
-		"message": msg,
-		"error":   err.Error(),
+	response := ErrorResponse{
+		Error:   err.Error(),
+		Message: msg,
 	}
+
 	h.JSONResponse(response, statuscode)
 
 }
