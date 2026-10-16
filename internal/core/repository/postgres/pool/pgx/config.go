@@ -27,7 +27,7 @@ func NewConfig() (*Config, error) {
 func ConfigMust() *Config {
 	config, err := NewConfig()
 	if err != nil {
-		fmt.Printf("error postgres cfg :%w", err)
+		fmt.Printf("error postgres cfg :%v", err)
 		panic("Error during postgres cfg build from env")
 	}
 	return config

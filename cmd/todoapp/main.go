@@ -22,6 +22,9 @@ import (
 	user_postgres_repository "github.com/MaximKachkov/ToDooo/internal/features/users/repository/postgres"
 	users_service "github.com/MaximKachkov/ToDooo/internal/features/users/service"
 	users_transport_http "github.com/MaximKachkov/ToDooo/internal/features/users/transport/http"
+	web_fs_repository "github.com/MaximKachkov/ToDooo/internal/features/web/repository/file_system"
+	web_service "github.com/MaximKachkov/ToDooo/internal/features/web/service"
+	web_transport_http "github.com/MaximKachkov/ToDooo/internal/features/web/transport/http"
 	"go.uber.org/zap"
 )
 
@@ -66,6 +69,10 @@ func main() {
 	statisticsService := statistics_service.NewStatisticsService(statisticsRepository)
 	statisticsTransportHTTP := statistics_transport_http.NewStatisticsHTTPHandler(statisticsService)
 
+	webRepository := web_fs_repository.NewWebRepository()
+	webService := web_service.NewWebService(webRepository)
+	webTransportHTTP := web_transport_http.NewWebHTTPHandler(webService)
+
 	logger.Debug("initializing HTTP server")
 
 	httpServer := core_http_server.NewHTTPServer(*core_http_server.ConfigMust(), logger,
@@ -79,12 +86,14 @@ func main() {
 	apiVersionRouterV1.RegisterRoutes(usersTranposrtHTTP.Routes()...)
 	apiVersionRouterV1.RegisterRoutes(tasksTransportHTTP.Routes()...)
 	apiVersionRouterV1.RegisterRoutes(statisticsTransportHTTP.Routes()...)
+
 	/*
 	   //	apiVersionRouterV2 := core_http_server.NewAPIVersionRouter(core_http_server.APIVersion2, core_http_middleware.Dummy("api v2 middleware"))
 	   //	apiVersionRouterV2.RegisterRoutes(usersTranposrtHTTP.Routes()...)
 	*/
 	httpServer.RegisterAPIRouters(apiVersionRouterV1) //apiVersionRouterV2,
 	httpServer.RegisterSwagger()
+	httpServer.RegisterRoutes(webTransportHTTP.Routes()...)
 
 	if err := httpServer.Run(ctx); err != nil {
 		logger.Error("HTTP server run error ", zap.Error(err))
