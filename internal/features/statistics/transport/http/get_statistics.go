@@ -26,6 +26,7 @@ func (h *StatisticsHTTPHandler) GetStatistics(rw http.ResponseWriter, r *http.Re
 	userId, fromTime, toTime, err := GetUserIDFromToQueryParams(r)
 	if err != nil {
 		responseHandler.ErrorResponse(err, "not able to get query params in GetStatistics")
+		return
 	}
 
 	statDomain, err := h.statisticsService.GetStatistics(ctx, userId, fromTime, toTime)

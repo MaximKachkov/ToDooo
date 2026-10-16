@@ -31,7 +31,7 @@ func (r *StatisticsRepositry) GetTasks(ctx context.Context, userId *int, from *t
 		args = append(args, from)
 	}
 	if to != nil {
-		conditions = append(conditions, fmt.Sprint("completed_at <$%d", len(args)+1))
+		conditions = append(conditions, fmt.Sprintf("completed_at <$%d", len(args)+1))
 		args = append(args, to)
 	}
 

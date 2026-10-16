@@ -26,12 +26,13 @@ func GetTimeQueryParam(r *http.Request, key string) (*time.Time, error) {
 	if param == "" {
 		return nil, nil
 	}
-	layout := "2006-01-02"
-
-	time, err := time.Parse(layout, param)
+	parsedTime, err := time.Parse(time.RFC3339, param)
+	if err != nil {
+		parsedTime, err = time.Parse("2006-01-02", param)
+	}
 	if err != nil {
 		return nil, fmt.Errorf("error parsing a time form param:%s , %v , %w", param, err, core_errors.ErrInvalidArgument)
 	}
-	return &time, nil
+	return &parsedTime, nil
 
 }

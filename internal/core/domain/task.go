@@ -52,7 +52,10 @@ func (t Task) CompletionDuration() *time.Duration {
 
 func (t Task) Validate() error {
 	lenTitle := len([]rune(t.Title))
-	lenDescription := len([]rune(*t.Description))
+	lenDescription := 0
+	if t.Description != nil {
+		lenDescription = len([]rune(*t.Description))
+	}
 
 	if lenTitle < 1 || lenTitle > 100 {
 		return fmt.Errorf("title len need to be between 1 and 100 : %w", core_errors.ErrInvalidArgument)

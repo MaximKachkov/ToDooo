@@ -51,7 +51,7 @@ type PatchUserResponse UserDTOResponse
 // @Description 1. ***Поле не передано***: `phone_number` игнорируется , значение в БД не меняется
 // @Description 2. ***Явно передано значение***: `"phone_number":"+77081540727"` - устанавливает новый номер в бд
 // @Description 3. **Передан null**: `"phone_number": null`	 null - очищает значение в дб
-// @Description 4. Ограничения: `full_name` не может быть выставлен как null
+// @Description 4. **Ограничения**: `full_name` не может быть выставлен как null
 // @Tags  users
 // @Accept json
 // @Produce json
