@@ -8,6 +8,7 @@ import (
 	"syscall"
 	"time"
 
+	_ "github.com/MaximKachkov/ToDooo/docs"
 	core_logger "github.com/MaximKachkov/ToDooo/internal/core/logger"
 	core_pgx_pool "github.com/MaximKachkov/ToDooo/internal/core/repository/postgres/pool/pgx"
 	core_http_middleware "github.com/MaximKachkov/ToDooo/internal/core/transport/http/middleware"
@@ -28,6 +29,11 @@ var (
 	timeZone = time.UTC
 )
 
+// @title 	Golang ToDo API
+// @version 	1.0
+// @description 	ToDo app REST-API scheme
+// @host 	127.0.0.1:5050
+// @BasePath 	/api/v1
 func main() {
 	time.Local = timeZone
 	ctx, _ := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
@@ -63,6 +69,7 @@ func main() {
 	logger.Debug("initializing HTTP server")
 
 	httpServer := core_http_server.NewHTTPServer(*core_http_server.ConfigMust(), logger,
+		core_http_middleware.CORS(),
 		core_http_middleware.RequestId(),
 		core_http_middleware.Logger(logger),
 		core_http_middleware.Trace(),
@@ -77,6 +84,7 @@ func main() {
 	   //	apiVersionRouterV2.RegisterRoutes(usersTranposrtHTTP.Routes()...)
 	*/
 	httpServer.RegisterAPIRouters(apiVersionRouterV1) //apiVersionRouterV2,
+	httpServer.RegisterSwagger()
 
 	if err := httpServer.Run(ctx); err != nil {
 		logger.Error("HTTP server run error ", zap.Error(err))
